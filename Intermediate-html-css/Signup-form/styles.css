@@ -1,0 +1,108 @@
+/* General Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  height: 100vh;
+}
+
+/* Left Image Section */
+.image-part {
+  flex: 1;
+  background: url('src/1.jpg') no-repeat center center/cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+  color: white;
+}
+
+.logo-part {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  background-color: #475636;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: bold;
+  background-image: url('src/2.png');
+}
+
+.logo-text {
+  font-size: 1rem;
+}
+
+/* Right Sign-up Form Section */
+.sign-up-side {
+  flex: 1;
+  background-color: #fff;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.sign-up-heading-text {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.form-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.form-content input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  flex: 1 1 45%;
+  font-size: 1rem;
+}
+
+input:invalid {
+  border-color: red;
+}
+
+/* Create Account Button */
+.create-account button {
+  background-color: #596D48;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.create-account button:hover {
+  background-color: #475636;
+}
+
+/* Login Link Text */
+.log-in {
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+.log-in a {
+  text-decoration: none;
+  color: #596D48;
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'TittleFont';
+  src: url('src/Norse-Bold.otf') format('opentype');
+}
