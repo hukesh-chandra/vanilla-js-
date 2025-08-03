@@ -1,0 +1,30 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.main-page{
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    grid-template-areas: 
+        "sidebar topbar" 
+        "sidebar home-page";
+    grid-template-columns: 20vw 1fr;
+    grid-template-rows: 13vh 1fr;
+}
+.sidebar{
+    background-color: #1992D4;
+    grid-area: sidebar;
+}
+
+.topbar{
+    background-color: #FFFFFF;
+    grid-area: topbar;
+}
+
+.home-page{
+    background-color: #E2E8F0;
+    grid-area: home-page;
+}
