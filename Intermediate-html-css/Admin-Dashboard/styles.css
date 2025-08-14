@@ -17,8 +17,29 @@
 .sidebar{
     background-color: #1992D4;
     grid-area: sidebar;
+    display: grid;
+    grid-template-areas: 
+        "sidebar-top"
+        "sidebar-nav"
+        "sidebar-branding";
+    grid-template-rows: 5% 40% 55%;
 }
 
+.sidebar-top{
+    grid-area: sidebar-top;
+    display: flex;
+    align-items: center;
+    justify-content:flex-start;
+}
+
+.sidebar-top-icon{
+    font-size: 200%;
+    margin-left: 5%;
+}
+
+.sidebar-top-text{
+    font-size: 150%;
+} 
 .topbar{
     background-color: #FFFFFF;
     grid-area: topbar;
