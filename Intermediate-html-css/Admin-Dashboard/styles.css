@@ -1,51 +1,342 @@
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-.main-page{
+.main-page {
     height: 100vh;
     width: 100vw;
     display: grid;
-    grid-template-areas: 
-        "sidebar topbar" 
+    grid-template-areas:
+        "sidebar topbar"
         "sidebar home-page";
     grid-template-columns: 20vw 1fr;
     grid-template-rows: 13vh 1fr;
 }
-.sidebar{
+
+.sidebar {
     background-color: #1992D4;
     grid-area: sidebar;
     display: grid;
-    grid-template-areas: 
+    grid-template-areas:
         "sidebar-top"
         "sidebar-nav"
         "sidebar-branding";
-    grid-template-rows: 5% 40% 55%;
+    grid-template-rows: 6% 30% 15%;
+    grid-gap: 3%;
 }
 
-.sidebar-top{
+.sidebar-top {
     grid-area: sidebar-top;
     display: flex;
     align-items: center;
-    justify-content:flex-start;
+    justify-content: flex-start;
+    margin-top: 10%;
 }
 
-.sidebar-top-icon{
-    font-size: 200%;
-    margin-left: 5%;
+.sidebar-top-icon {
+    height: 150%;
+    margin-left: 5%;;
+    color: #FFFFFF;
 }
 
-.sidebar-top-text{
-    font-size: 150%;
-} 
-.topbar{
-    background-color: #FFFFFF;
+.sidebar-top-text {
+    font-size: 170%;
+    color: #FFFFFF;
+}
+
+.sidebar-nav {
+    grid-area: sidebar-nav;
+    display: grid;
+    grid-template-areas:
+        "nav-item-1"
+        "nav-item-2"
+        "nav-item-3"
+        "nav-item-4";
+    grid-template-rows: 20% 20% 20% 20%;
+}
+
+/* Compact branding styles (smaller icon + text, less padding) */
+.sidebar-branding {
+    grid-area: sidebar-branding;
+    display: grid;
+    grid-template-areas: 
+        "branding-item-1"
+        "branding-item-2";
+    grid-template-rows: 50% 50%;
+    align-items: center;
+}
+
+/* Unified nav + branding button styles so all items share the same sizing */
+.sidebar-nav-item,
+.sidebar-nav-items,
+.sidebar-branding .sidebar-nav-item,
+.sidebar-branding .sidebar-nav-items {
+    background: transparent;
+    border: none;
+    width: 100%;
+    padding: 0.9rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    color: #FFFFFF;
+    font-size: 1.1rem;
+    text-align: left;
+    transition: background 0.15s ease, border-left 0.15s ease;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* Consistent icon sizing for all nav/branding icons */
+.sidebar-nav-icon {
+    height: 1.6rem; /* fixed size to match text scale */
+    width: auto;
+    color: #FFFFFF;
+    margin-left: 0.5rem;
+    flex: 0 0 auto;
+}
+
+/* Consistent text sizing for all nav/branding text */
+.sidebar-nav-text {
+    font-size: 1.15rem;
+    margin-left: 0.6rem;
+    color: #FFFFFF;
+}
+
+/* hover / focus states */
+.sidebar-nav-item:hover,
+.sidebar-nav-items:hover,
+.sidebar-branding .sidebar-nav-item:hover,
+.sidebar-branding .sidebar-nav-items:hover,
+.sidebar-nav-item:focus,
+.sidebar-nav-items:focus,
+.sidebar-branding .sidebar-nav-item:focus,
+.sidebar-branding .sidebar-nav-items:focus {
+    background: rgba(255,255,255,0.06);
+    outline: none;
+    border-left: 4px solid rgba(255,255,255,0.15);
+}
+
+/* Responsive: collapse to single-column layout and make nav horizontal/scrollable */
+@media (max-width: 900px) {
+    .main-page {
+        grid-template-areas:
+            "sidebar"
+            "topbar"
+            "home-page";
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 60px 1fr;
+    }
+
+    .sidebar {
+        grid-area: sidebar;
+        display: block;
+        padding: 0.5rem 0;
+    }
+
+    .sidebar-top {
+        margin-top: 0;
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        flex-direction: row;
+        gap: 0.25rem;
+        overflow-x: auto;
+        padding: 0.5rem 0.5rem;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .sidebar-nav-item,
+    .sidebar-nav-items,
+    .sidebar-branding .sidebar-nav-item,
+    .sidebar-branding .sidebar-nav-items {
+        flex: 0 0 auto;
+        padding: 0.6rem 0.9rem;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+
+    .sidebar-branding {
+        display: none; /* hide branding on small screens to save space */
+    }
+
+    .sidebar-nav-text {
+        margin-left: 8px;
+        font-size: 0.95rem;
+    }
+}
+
+/* PHONE / small screens: make sidebar a compact top bar and normalize sizes */
+@media (max-width: 600px) {
+  .main-page {
+    grid-template-areas:
+      "sidebar"
+      "topbar"
+      "home-page";
+    grid-template-columns: 1fr;
+    grid-template-rows: 60px 56px 1fr; /* sidebar as top bar, topbar small, content */
+  }
+
+  /* compact horizontal top bar */
+  .sidebar {
+    grid-area: sidebar;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 60px;
+    padding: 0 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .sidebar-top {
+    margin-top: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: flex-start;
+  }
+
+  .sidebar-top-icon {
+    height: 1.05rem;
+    margin-left: 0.25rem;
+  }
+
+  .sidebar-top-text {
+    font-size: 1rem;
+  }
+
+  /* make nav horizontally scrollable and compact */
+  .sidebar-nav {
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    align-items: center;
+    margin-left: 0.25rem;
+  }
+
+  /* unify all nav/branding buttons and reduce padding/font for phone */
+  .sidebar-nav-item,
+  .sidebar-nav-items,
+  .sidebar-branding .sidebar-nav-item,
+  .sidebar-branding .sidebar-nav-items {
+    flex: 0 0 auto;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    gap: 8px;
+  }
+
+  /* consistent smaller icon size */
+  .sidebar-nav-icon {
+    height: 1.2rem;
+    width: auto;
+    margin-left: 0;
+    flex: 0 0 auto;
+  }
+
+  .sidebar-nav-text {
+    font-size: 0.95rem;
+    margin-left: 0.5rem;
+    white-space: nowrap;
+  }
+
+  /* show branding inline on the right */
+  .sidebar-branding {
+    margin-left: auto;
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+
+  /* keep topbar and content visible below the new top bar */
+  .topbar {
     grid-area: topbar;
+    height: 56px;
+  }
+
+  .home-page {
+    grid-area: home-page;
+    padding: 1rem;
+  }
 }
 
-.home-page{
-    background-color: #E2E8F0;
-    grid-area: home-page;
+/* Topbar */
+.topbar {
+    background: #fff;
+    grid-area: topbar;
+    border-bottom: 1px solid #e6eef7;
+}
+.topbar-inner {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 0.5rem 1rem;
+}
+.topbar-left { display:flex; align-items:center; gap:10px; }
+.topbar-logo { font-weight:700; color:#1992D4; }
+.topbar-title { color:#333; font-size:1rem; margin-left:6px; }
+.topbar-center { color:#666; font-size:0.95rem; }
+.topbar-right { display:flex; align-items:center; gap:8px; }
+.topbar-avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; }
+.topbar-username { font-size:0.95rem; color:#333; }
+
+/* Panels */
+.home-page { padding: 1rem; grid-area: home-page; overflow:auto; }
+.panel { display:none; background: #f8fafc; padding:1rem; border-radius:8px; margin-bottom:1rem; }
+.panel.active { display:block; }
+
+/* Projects */
+.projects { display:flex; gap:1rem; flex-wrap:wrap; }
+.project-card { background:white; padding:1rem; border-radius:6px; width: 260px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.project-card h3 { margin-bottom:6px; }
+.project-card a { color:#1992D4; text-decoration:none; font-weight:600; }
+
+/* Profile */
+.profile-grid { display:flex; gap:1rem; align-items:flex-start; }
+.profile-photo img { width:160px; height:160px; object-fit:cover; border-radius:6px; }
+.profile-details p { margin:6px 0; }
+.profile-link { display:inline-block; margin-top:6px; color:#1992D4; }
+
+/* Certifications */
+.cert-list { list-style:none; padding-left:0; }
+.cert-list li { background:white; margin-bottom:8px; padding:10px; border-radius:6px; }
+
+/* Testimonials */
+.testimonials-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap:10px; }
+.testimonial { background:white; padding:10px; border-radius:6px; }
+
+/* Contact */
+.contact-grid { display:flex; gap:1rem; flex-wrap:wrap; }
+.contact-grid form { display:flex; flex-direction:column; gap:8px; }
+.contact-grid input, .contact-grid textarea { padding:8px; border:1px solid #ccc; border-radius:4px; width:100%; max-width:300px; }
+.contact-grid button { background:#1992D4; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; }
+
+/* Fun / RPS */
+.rps { display:flex; gap:1rem; align-items:center; flex-wrap:wrap; }
+.rps-controls button { margin-right:8px; padding:8px 12px; border-radius:6px; border:1px solid #1992D4; background:white; cursor:pointer; }
+.rps-result { min-width:200px; }
+.rps-status { margin-bottom:6px; font-weight:600; }
+
+/* Small screens polish */
+@media (max-width: 600px) {
+    .topbar-inner { padding:0.4rem; }
+    .topbar-center { display:none; }
+    .profile-grid { flex-direction:column; align-items:center; }
+    .projects { flex-direction:column; }
+    .sidebar { height:60px; }
+    .sidebar-nav { gap:0.25rem; overflow-x:auto; }
+    .sidebar-nav-item, .sidebar-branding .sidebar-nav-item { padding:0.4rem 0.6rem; font-size:0.95rem; }
+    .sidebar-top-text { font-size:0.95rem; }
+    .project-card { width:100%; }
 }
