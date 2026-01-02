@@ -1,0 +1,49 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.library{
+    background-color: rgb(51, 63, 63);
+    width: 100%;
+    height: 97.5vh;
+    justify-content: left;
+    justify-items: flex-start;
+    flex-wrap: wrap;
+    display: flex;
+}
+
+.book{
+    margin: 0 2% 2% 2%;
+    background-color: rgb(30, 63, 63);
+    width: 20vh;
+    height: 20vh;
+}
+
+.title{
+    height: 10%;
+    background-color: rgb(0, 0, 0);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.author{
+    height: 10%;
+    background-color: rgb(97, 63, 21);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pages{
+    height: 10%;
+    background-color: rgb(211, 123, 16);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
