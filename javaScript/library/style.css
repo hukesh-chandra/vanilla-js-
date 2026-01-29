@@ -11,7 +11,7 @@
     justify-content: left;
     justify-items: flex-start;
     flex-wrap: wrap;
-    display: flex;
+    display: flex; 
 }
 
 .book{
