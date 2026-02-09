@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TREKRACE – Conquer Every Trail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  /* ─── VARIABLES & RESET ─── */
+  :root {
+    --lime:    #c8f542;
+    --lime-dk: #a0c930;
+    --ink:     #0e0e0e;
+    --sand:    #f0ebe3;
+    --dust:    #d4cec3;
+    --text:    #2a2a2a;
+    --muted:   #6b6560;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ink);
+    color: var(--sand);
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 999;
+    pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.4rem 3rem;
+    transition: background .35s, backdrop-filter .35s, box-shadow .35s;
+  }
+  nav.scrolled {
+    background: rgba(14,14,14,.82);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 1px 0 rgba(255,255,255,.06);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.7rem;
+    letter-spacing: .12em;
+    color: var(--lime);
+    text-decoration: none;
+  }
+
+  .nav-links { display: flex; gap: 2.4rem; list-style: none; }
+  .nav-links a {
+    color: var(--sand);
+    text-decoration: none;
+    font-size: .82rem;
+    font-weight: 500;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 4px;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0;
+    width: 0; height: 2px;
+    background: var(--lime);
+    transition: width .3s;
+  }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-cta {
+    background: var(--lime);
+    color: var(--ink);
+    border: none;
+    padding: .6rem 1.5rem;
+    border-radius: 4px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: .78rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(200,245,66,.3); }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    height: 100vh;
+    min-height: 640px;
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 3rem 7rem;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(170deg, rgba(14,14,14,.15) 0%, rgba(14,14,14,.55) 50%, rgba(14,14,14,.92) 100%),
+      url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1800&q=80') center/cover no-repeat;
+  }
+
+  /* ─── Animated mountain silhouettes ─── */
+  .mountain {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 280px;
+    pointer-events: none;
+  }
+  .mountain svg { width: 100%; height: 100%; }
+
+  /* ─── Floating particles ─── */
+  .particle {
+    position: absolute;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--lime);
+    opacity: 0;
+    animation: floatUp 8s linear infinite;
+  }
+  .particle:nth-child(1) { left: 12%; animation-delay: 0s; }
+  .particle:nth-child(2) { left: 28%; animation-delay: 1.5s; width:2px;height:2px; }
+  .particle:nth-child(3) { left: 52%; animation-delay: 3s; }
+  .particle:nth-child(4) { left: 71%; animation-delay: 4.5s; width:2px;height:2px; }
+  .particle:nth-child(5) { left: 88%; animation-delay: 6s; }
+
+  @keyframes floatUp {
+    0%  { transform: translateY(0) scale(1); opacity: 0; }
+    10% { opacity: .7; }
+    90% { opacity: .3; }
+    100%{ transform: translateY(-700px) scale(0); opacity: 0; }
+  }
+
+  .hero-content { position: relative; z-index: 2; max-width: 680px; }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: .6rem;
+    background: rgba(200,245,66,.1);
+    border: 1px solid rgba(200,245,66,.25);
+    border-radius: 20px;
+    padding: .38rem 1rem;
+    font-size: .73rem;
+    font-weight: 500;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 1.6rem;
+    animation: fadeSlideUp .8s .2s both;
+  }
+  .hero-tag .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--lime);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(200,245,66,.5); }
+    50%     { box-shadow: 0 0 0 6px rgba(200,245,66,0); }
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.4rem, 9vw, 7.2rem);
+    line-height: .95;
+    letter-spacing: -.01em;
+    color: #fff;
+    animation: fadeSlideUp .9s .35s both;
+  }
+  .hero h1 .lime { color: var(--lime); }
+
+  .hero-sub {
+    margin-top: 1.4rem;
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: rgba(240,235,227,.7);
+    max-width: 480px;
+    line-height: 1.6;
+    animation: fadeSlideUp .9s .55s both;
+  }
+
+  .hero-actions {
+    margin-top: 2.4rem;
+    display: flex; gap: 1rem; align-items: center;
+    animation: fadeSlideUp .9s .72s both;
+  }
+
+  .btn-primary {
+    background: var(--lime);
+    color: var(--ink);
+    text-decoration: none;
+    padding: .85rem 2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: .82rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    transition: transform .2s, box-shadow .2s;
+    display: inline-flex; align-items: center; gap: .5rem;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(200,245,66,.35); }
+  .btn-primary svg { transition: transform .3s; }
+  .btn-primary:hover svg { transform: translateX(3px); }
+
+  .btn-ghost {
+    color: var(--sand);
+    text-decoration: none;
+    font-size: .82rem;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: .4rem;
+    opacity: .7;
+    transition: opacity .25s;
+  }
+  .btn-ghost:hover { opacity: 1; }
+  .btn-ghost .play-icon {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(240,235,227,.45);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  @keyframes fadeSlideUp {
+    from { opacity:0; transform: translateY(28px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  /* ─── SCROLL HINT ─── */
+  .scroll-hint {
+    position: absolute; bottom: 2.2rem; left: 50%; transform: translateX(-50%);
+    z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: .5rem;
+    color: rgba(240,235,227,.4);
+    font-size: .68rem; letter-spacing: .18em; text-transform: uppercase;
+  }
+  .scroll-hint .line {
+    width: 1px; height: 36px;
+    background: linear-gradient(to bottom, rgba(200,245,66,.6), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+  @keyframes scrollPulse {
+    0%,100% { transform: scaleY(1); opacity:1; }
+    50%     { transform: scaleY(.5); opacity:.4; }
+  }
+
+  /* ─── STATS STRIP ─── */
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: rgba(255,255,255,.03);
+    border-top: 1px solid rgba(255,255,255,.07);
+    border-bottom: 1px solid rgba(255,255,255,.07);
+  }
+  .stat {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,.07);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    color: var(--lime);
+    letter-spacing: .06em;
+  }
+  .stat-label {
+    font-size: .72rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: .25rem;
+  }
+
+  /* ─── SECTIONS SHARED ─── */
+  section { padding: 7rem 3rem; }
+
+  .section-label {
+    display: inline-flex; align-items: center; gap: .7rem;
+    font-size: .72rem; font-weight: 500;
+    letter-spacing: .2em; text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 1rem;
+  }
+  .section-label::before {
+    content: '';
+    width: 28px; height: 2px;
+    background: var(--lime);
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    color: #fff;
+    letter-spacing: .02em;
+    line-height: 1.05;
+  }
+
+  /* ─── PRODUCTS ─── */
+  .products { background: var(--ink); }
+
+  .products-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 3.5rem;
+    flex-wrap: wrap; gap: 1.5rem;
+  }
+
+  .filter-pills { display: flex; gap: .6rem; flex-wrap: wrap; }
+  .pill {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    color: var(--sand);
+    padding: .45rem 1.1rem;
+    border-radius: 20px;
+    font-size: .76rem;
+    font-weight: 500;
+    letter-spacing: .08em;
+    cursor: pointer;
+    transition: background .25s, border-color .25s, color .25s;
+  }
+  .pill:hover, .pill.active {
+    background: var(--lime);
+    border-color: var(--lime);
+    color: var(--ink);
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.6rem;
+  }
+
+  .product-card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform .35s, border-color .35s, box-shadow .35s;
+    position: relative;
+  }
+  .product-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(200,245,66,.25);
+    box-shadow: 0 20px 50px rgba(0,0,0,.4);
+  }
+
+  .product-card .badge {
+    position: absolute; top: 14px; left: 14px; z-index: 2;
+    background: var(--lime);
+    color: var(--ink);
+    font-size: .64rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: .3rem .7rem;
+    border-radius: 4px;
+  }
+
+  .card-img {
+    width: 100%; aspect-ratio: 4/3;
+    object-fit: cover;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .5s;
+  }
+  .product-card:hover .card-img img { transform: scale(1.06); }
+
+  /* Placeholder gradient when no img */
+  .card-img-placeholder {
+    width: 100%; aspect-ratio: 4/3;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .card-body { padding: 1.3rem 1.4rem 1.6rem; }
+  .card-cat {
+    font-size: .68rem; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: .35rem;
+  }
+  .card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.25rem;
+    color: #fff;
+    letter-spacing: .05em;
+    margin-bottom: .3rem;
+  }
+  .card-desc {
+    font-size: .8rem; color: var(--muted); line-height: 1.5; margin-bottom: .8rem;
+  }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .card-price {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.35rem;
+    color: var(--lime);
+    letter-spacing: .04em;
+  }
+  .card-price .old {
+    font-size: .82rem; color: var(--muted);
+    text-decoration: line-through;
+    margin-left: .35rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+  }
+  .card-add {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    background: rgba(200,245,66,.1);
+    border: 1px solid rgba(200,245,66,.25);
+    color: var(--lime);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+    font-size: 1.2rem;
+  }
+  .card-add:hover { background: var(--lime); color: var(--ink); transform: scale(1.08); }
+
+  /* ─── WHY SECTION ─── */
+  .why { background: var(--sand); color: var(--ink); }
+  .why .section-label { color: var(--ink); opacity:.55; }
+  .why .section-label::before { background: var(--ink); }
+  .why .section-title { color: var(--ink); }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+    margin-top: 3.2rem;
+  }
+  .why-card {
+    padding: 2rem 0;
+    border-top: 2px solid transparent;
+    transition: border-color .3s;
+  }
+  .why-card:hover { border-color: var(--ink); }
+
+  .why-icon {
+    width: 52px; height: 52px;
+    background: var(--ink);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.2rem;
+  }
+  .why-icon svg { width: 24px; height: 24px; stroke: var(--lime); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .why-card h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: .06em;
+    margin-bottom: .5rem;
+    color: var(--ink);
+  }
+  .why-card p { font-size: .84rem; color: var(--muted); line-height: 1.65; }
+
+  /* ─── NEWSLETTER / CTA BAND ─── */
+  .cta-band {
+    position: relative;
+    background: var(--ink);
+    padding: 6rem 3rem;
+    overflow: hidden;
+  }
+  .cta-band::before {
+    content:'';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 50%, rgba(200,245,66,.08) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 50% at 80% 60%, rgba(200,245,66,.05) 0%, transparent 70%);
+  }
+  .cta-inner {
+    position: relative; z-index: 1;
+    max-width: 640px; margin: 0 auto; text-align: center;
+  }
+  .cta-inner .section-title { margin-bottom: 1rem; }
+  .cta-inner p { font-size: .92rem; color: var(--muted); line-height: 1.7; margin-bottom: 2rem; }
+
+  .newsletter-form {
+    display: flex; gap: .7rem; max-width: 480px; margin: 0 auto;
+  }
+  .newsletter-form input {
+    flex: 1;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 6px;
+    padding: .82rem 1.2rem;
+    color: var(--sand);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .84rem;
+    outline: none;
+    transition: border-color .25s;
+  }
+  .newsletter-form input::placeholder { color: var(--muted); }
+  .newsletter-form input:focus { border-color: var(--lime); }
+  .newsletter-form button {
+    background: var(--lime);
+    color: var(--ink);
+    border: none;
+    border-radius: 6px;
+    padding: .82rem 1.7rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: .78rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    white-space: nowrap;
+  }
+  .newsletter-form button:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(200,245,66,.3); }
+
+  /* ─── TESTIMONIALS ─── */
+  .testimonials { background: rgba(255,255,255,.02); padding: 6rem 3rem; }
+  .testimonials-header { text-align: center; margin-bottom: 3rem; }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6rem;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .testi-card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    padding: 2rem;
+    transition: border-color .3s;
+  }
+  .testi-card:hover { border-color: rgba(200,245,66,.2); }
+
+  .testi-stars { color: var(--lime); font-size: 1rem; margin-bottom: .9rem; letter-spacing: .08em; }
+  .testi-text { font-size: .84rem; line-height: 1.7; color: rgba(240,235,227,.7); margin-bottom: 1.4rem; font-style: italic; }
+  .testi-author { display: flex; align-items: center; gap: .8rem; }
+  .testi-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--lime), #3a8a00);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem; color: var(--ink);
+  }
+  .testi-info h4 { font-size: .82rem; color: #fff; font-weight: 600; }
+  .testi-info span { font-size: .72rem; color: var(--muted); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: rgba(255,255,255,.02);
+    border-top: 1px solid rgba(255,255,255,.07);
+    padding: 4rem 3rem 2.5rem;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .footer-brand .logo { font-size: 1.5rem; display: inline-block; margin-bottom: .9rem; }
+  .footer-brand p { font-size: .82rem; color: var(--muted); line-height: 1.7; max-width: 300px; }
+
+  .footer-col h4 {
+    font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--sand); margin-bottom: 1rem; font-weight: 600;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: .55rem; }
+  .footer-col a { color: var(--muted); text-decoration: none; font-size: .82rem; transition: color .2s; }
+  .footer-col a:hover { color: var(--lime); }
+
+  .footer-bottom {
+    max-width: 1100px; margin: 2.5rem auto 0;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,.07);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-bottom p { font-size: .73rem; color: var(--muted); }
+
+  .social-links { display: flex; gap: 1rem; }
+  .social-links a {
+    color: var(--muted);
+    transition: color .2s;
+    display: flex; align-items: center;
+  }
+  .social-links a:hover { color: var(--lime); }
+  .social-links svg { width: 18px; height: 18px; }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(36px);
+    transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .stat:nth-child(2) { border-right: none; }
+    .why-grid { grid-template-columns: 1fr 1fr; }
+    .testimonials-grid { grid-template-columns: 1fr; max-width: 500px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    section, .hero { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .why-grid { grid-template-columns: 1fr; }
+    .products-header { flex-direction: column; align-items: flex-start; }
+    .newsletter-form { flex-direction: column; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; gap: .8rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="logo">TREKRACE</a>
+  <ul class="nav-links">
+    <li><a href="#products">Shop</a></li>
+    <li><a href="#why">About</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#newsletter">Contact</a></li>
+  </ul>
+  <button class="nav-cta">Cart (0)</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+
+  <!-- Particles -->
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+
+  <!-- Mountain silhouette -->
+  <div class="mountain">
+    <svg viewBox="0 0 1440 280" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="mtn1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="rgba(14,14,14,0.6)"/>
+          <stop offset="100%" stop-color="rgba(14,14,14,1)"/>
+        </linearGradient>
+      </defs>
+      <path d="M0,280 L0,160 L180,80 L320,140 L480,40 L620,110 L780,20 L900,100 L1060,50 L1200,130 L1350,60 L1440,90 L1440,280 Z" fill="url(#mtn1)"/>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-tag"><span class="dot"></span> New Season Collection — 2026</div>
+    <h1>GEAR UP.<br><span class="lime">TREK FAR.</span></h1>
+    <p class="hero-sub">Premium trekking accessories engineered for the trails that push your limits. Lightweight, durable, uncompromising.</p>
+    <div class="hero-actions">
+      <a href="#products" class="btn-primary">
+        Explore Gear
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="#" class="btn-ghost">
+        <span class="play-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l6 4-6 4V3z" fill="currentColor"/></svg>
+        </span>
+        Watch Story
+      </a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="line"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat">
+    <div class="stat-num">12K+</div>
+    <div class="stat-label">Happy Trekkers</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">340+</div>
+    <div class="stat-label">Trails Conquered</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">98%</div>
+    <div class="stat-label">Satisfaction Rate</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">50+</div>
+    <div class="stat-label">Premium Products</div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="products" id="products">
+  <div class="products-header reveal">
+    <div>
+      <div class="section-label">Our Collection</div>
+      <h2 class="section-title">ESSENTIAL<br>TREK GEAR</h2>
+    </div>
+    <div class="filter-pills">
+      <button class="pill active" onclick="filterProducts('all', this)">All</button>
+      <button class="pill" onclick="filterProducts('bags', this)">Bags</button>
+      <button class="pill" onclick="filterProducts('footwear', this)">Footwear</button>
+      <button class="pill" onclick="filterProducts('accessories', this)">Accessories</button>
+      <button class="pill" onclick="filterProducts('safety', this)">Safety</button>
+    </div>
+  </div>
+
+  <div class="products-grid" id="productsGrid">
+    <!-- Cards injected by JS -->
+  </div>
+</section>
+
+<!-- WHY TREKRACE -->
+<section class="why" id="why">
+  <div class="products-header reveal" style="margin-bottom:0; justify-content:center; text-align:center;">
+    <div>
+      <div class="section-label">Why Us</div>
+      <h2 class="section-title">WHY CHOOSE<br>TREKRACE?</h2>
+    </div>
+  </div>
+  <div class="why-grid">
+    <div class="why-card reveal">
+      <div class="why-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h3>Ultra-Light Design</h3>
+      <p>Every gram matters on the trail. Our gear is engineered with aerospace-grade materials to keep your pack light without sacrificing durability.</p>
+    </div>
+    <div class="why-card reveal">
+      <div class="why-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h3>Weather Proof</h3>
+      <p>Tested in the harshest conditions — from alpine blizzards to tropical humidity. Rain, wind, or shine, TREKRACE gear never lets you down.</p>
+    </div>
+    <div class="why-card reveal">
+      <div class="why-icon">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+      <h3>Made with Heart</h3>
+      <p>A community of trail-obsessed adventurers designed every product. Real feedback, real trails, real results — gear built by trekkers, for trekkers.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <div class="testimonials-header reveal">
+    <div class="section-label" style="justify-content:center;">Reviews</div>
+    <h2 class="section-title">WHAT TREKKERS SAY</h2>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testi-card reveal">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"The TrailPro backpack is an absolute game-changer. Carried 25kg for 3 days straight and my back thanked me every step of the way."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">RK</div>
+        <div class="testi-info">
+          <h4>Rahul Kapoor</h4>
+          <span>Trekked Roopkund, 2025</span>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Finally, trekking boots that actually fit well out of the box. Zero break-in pain. The grip on wet rocks is insane — seriously impressive."</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:linear-gradient(135deg,#42f5c8,#1a8a60)">SA</div>
+        <div class="testi-info">
+          <h4>Sneha Agarwal</h4>
+          <span>Trekked Kedarnath, 2025</span>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-stars">★★★★☆</div>
+      <p class="testi-text">"The headlamp lasted an entire night hike plus two more. Waterproof claim holds up too — dropped it in a stream accidentally and it kept going!"</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:linear-gradient(135deg,#f5a842,#c47a10)">MP</div>
+        <div class="testi-info">
+          <h4>Manish Patel</h4>
+          <span>Trekked Hampta Pass, 2025</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA / NEWSLETTER -->
+<section class="cta-band" id="newsletter">
+  <div class="cta-inner reveal">
+    <div class="section-label" style="justify-content:center;">Stay in the Loop</div>
+    <h2 class="section-title">READY FOR YOUR<br>NEXT ADVENTURE?</h2>
+    <p>Join 8,000+ trekkers. Get early access to new drops, trail guides, and exclusive member discounts — straight to your inbox.</p>
+    <div class="newsletter-form">
+      <input type="email" placeholder="Enter your email address" />
+      <button>Subscribe</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="logo">TREKRACE</a>
+      <p>Pushing the boundaries of outdoor adventure gear. Built for those who live on the trail and breathe the mountain air.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="#">Backpacks</a></li>
+        <li><a href="#">Footwear</a></li>
+        <li><a href="#">Accessories</a></li>
+        <li><a href="#">Safety Gear</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Press</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Shipping & Returns</a></li>
+        <li><a href="#">Size Guide</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 TREKRACE. All rights reserved.</p>
+    <div class="social-links">
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg></a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75,15.02 15.5,11.75 9.75,8.48 9.75,15.02"/></svg></a>
+    </div>
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script>
+// ─── NAV SCROLL ─── 
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ─── PRODUCT DATA ───
+const products = [
+  { id:1, name:'TrailPro 60L Backpack', cat:'bags', desc:'Hydration-ready, padded hip belt, waterproof shell.', price:5499, old:6999, badge:'Bestseller', grad:'linear-gradient(135deg,#1a3a1a,#2d5a2d)', icon:'🎒' },
+  { id:2, name:'Summit Trekking Boots', cat:'footwear', desc:'Ankle support, Vibram outsole, breathable mesh lining.', price:4299, old:null, badge:null, grad:'linear-gradient(135deg,#3b2a1a,#6b4a2a)', icon:'👟' },
+  { id:3, name:'AlpineShield Headlamp', cat:'accessories', desc:'500 lumens, 120hr battery, IP68 waterproof.', price:1899, old:2499, badge:'New', grad:'linear-gradient(135deg,#1a1a3b,#2a2a6b)', icon:'💡' },
+  { id:4, name:'UltraLight Tent 2P', cat:'accessories', desc:'Freestanding, 1.2kg total weight, 4-season rated.', price:8999, old:null, badge:null, grad:'linear-gradient(135deg,#2a1a3b,#5b3a7a)', icon:'⛺' },
+  { id:5, name:'GripMaster Trekking Poles', cat:'accessories', desc:'Carbon fiber, shock-absorbing, anti-vibe grip.', price:2199, old:2999, badge:'Sale', grad:'linear-gradient(135deg,#3b3b1a,#6b6b2a)', icon:'🥍' },
+  { id:6, name:'FrostGuard Gloves', cat:'accessories', desc:'Touchscreen compatible, -20°C rated, waterproof cuff.', price:999, old:null, badge:null, grad:'linear-gradient(135deg,#1a2a3b,#2a4a6b)', icon:'🧤' },
+  { id:7, name:'SafeGuard First Aid Kit', cat:'safety', desc:'Compact, lightweight, covers 50+ emergency scenarios.', price:1499, old:1999, badge:'Essential', grad:'linear-gradient(135deg,#3b1a1a,#6b2a2a)', icon:'🩹' },
+  { id:8, name:'DayHike 25L Pack', cat:'bags', desc:'Slim profile, ergonomic straps, quick-access pockets.', price:2799, old:null, badge:null, grad:'linear-gradient(135deg,#1a3b2a,#2a6b4a)', icon:'🎒' },
+];
+
+function renderProducts(filter = 'all') {
+  const grid = document.getElementById('productsGrid');
+  const filtered = filter === 'all' ? products : products.filter(p => p.cat === filter);
+  grid.innerHTML = filtered.map(p => `
+    <div class="product-card reveal">
+      ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
+      <div class="card-img-placeholder" style="background:${p.grad}">
+        <span style="font-size:3rem;">${p.icon}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-cat">${p.cat.charAt(0).toUpperCase()+p.cat.slice(1)}</div>
+        <div class="card-name">${p.name}</div>
+        <div class="card-desc">${p.desc}</div>
+        <div class="card-footer">
+          <div class="card-price">₹${p.price.toLocaleString()} ${p.old ? `<span class="old">₹${p.old.toLocaleString()}</span>` : ''}</div>
+          <button class="card-add" onclick="this.innerHTML='✓'; setTimeout(()=>this.innerHTML='+',1200)">+</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  // trigger reveal
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.reveal').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight - 60) el.classList.add('visible');
+    });
+  });
+}
+
+function filterProducts(cat, btn) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts(cat);
+}
+
+renderProducts();
+
+// ─── SCROLL REVEAL ───
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// Re-observe on product filter
+const origRender = renderProducts;
+const _renderProducts = renderProducts;
+const MutObs = new MutationObserver(() => {
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => revealObserver.observe(el));
+});
+MutObs.observe(document.getElementById('productsGrid'), { childList: true });
+
+// ─── NEWSLETTER ───
+document.querySelector('.newsletter-form button').addEventListener('click', function(){
+  const input = document.querySelector('.newsletter-form input');
+  if (input.value.includes('@')) {
+    this.textContent = '✓ Subscribed!';
+    this.style.background = '#42f5c8';
+    input.value = '';
+    setTimeout(() => { this.textContent = 'Subscribe'; this.style.background = ''; }, 3000);
+  } else {
+    input.style.borderColor = '#f54242';
+    setTimeout(() => input.style.borderColor = '', 1500);
+  }
+});
+</script>
+</body>
+</html>
